@@ -23,6 +23,7 @@ class EventService {
         // Flatten EventType.name to eventType
         plainEvent.eventType = plainEvent.EventType.name
         delete plainEvent.EventType
+        delete plainEvent.eventTypeId
 
         return plainEvent
     }

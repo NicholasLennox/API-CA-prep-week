@@ -26,8 +26,8 @@ beforeAll(async () => {
         { id: 4, name: 'Seminar' }
     ])
     await db.Event.bulkCreate([
-        { id: 1, title: 'Test Event 1', date: '2025-05-01', location: 'Oslo', eventType: 1},
-        { id: 2, title: 'Test Event 2', date: '2025-06-10', location: 'Bergen', eventType: 2}
+        { id: 1, title: 'Test Event 1', date: '2025-05-01', location: 'Oslo', eventTypeId: 1},
+        { id: 2, title: 'Test Event 2', date: '2025-06-10', location: 'Bergen', eventTypeId: 2}
     ])
 });
 
@@ -43,6 +43,7 @@ describe('Event service GET tests', () => {
         const validID = 1
         const event = await eventService.getById(validID)
 
+        // I changed eventTypeIdId to instead show the event type as string for getById to demonstrate how to flatten returned objects
         expect(event).toEqual({ id: 1, title: 'Test Event 1', date: '2025-05-01', location: 'Oslo', eventType: 'Conference'})
     })
 
@@ -60,7 +61,7 @@ describe('Event service POST tests', () => {
             title: 'Test Event 3',
             date: '2025-06-11',
             location: 'Oslo',
-            eventType: 1
+            eventTypeId: 1
         }
 
         const newEvent = await eventService.create(validData)
@@ -72,7 +73,7 @@ describe('Event service POST tests', () => {
         const invalidData = {
             date: '2025-06-11',
             location: 'Oslo',
-            eventType: 1
+            eventTypeId: 1
         }
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
         await expect(eventService.create(invalidData)).rejects.toThrow(ValidationError);
@@ -83,7 +84,7 @@ describe('Event service POST tests', () => {
             title: 'Test Event 3',
             date: '2024-06-11',
             location: 'Oslo',
-            eventType: 1
+            eventTypeId: 1
         }
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
         await expect(eventService.create(invalidData)).rejects.toThrow(ValidationError);
@@ -94,7 +95,7 @@ describe('Event service POST tests', () => {
             title: 't',
             date: '2025-06-11',
             location: 'Oslo',
-            eventType: 1
+            eventTypeId: 1
         }
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
         await expect(eventService.create(invalidData)).rejects.toThrow(ValidationError);
@@ -105,7 +106,7 @@ describe('Event service POST tests', () => {
             title: 'Test Event 4',
             date: '2025-06-11',
             location: 'Oslo',
-            eventType: 99
+            eventTypeId: 99
         }
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
         await expect(eventService.create(invalidData)).rejects.toThrow(ForeignKeyConstraintError);
@@ -120,7 +121,7 @@ describe('Event service PUT tests', () => {
             title: 'Updated Test Event 1',
             date: '2025-05-01', 
             location: 'Oslo', 
-            eventType: 1
+            eventTypeId: 1
         }
         const expectedRowsAffected = 1
 
@@ -136,7 +137,7 @@ describe('Event service PUT tests', () => {
             title: 'Updated Test Event 1',
             date: '2025-05-01', 
             location: 'Oslo', 
-            eventType: 1
+            eventTypeId: 1
         }
 
         const result = await eventService.update(eventId, invalidData)
@@ -151,7 +152,7 @@ describe('Event service PUT tests', () => {
             title: 'Updated Test Event 1',
             date: '2024-05-01', 
             location: 'Oslo', 
-            eventType: 1
+            eventTypeId: 1
         }
 
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
@@ -165,7 +166,7 @@ describe('Event service PUT tests', () => {
             title: 'Updated Test Event 1',
             date: '2025-05-01', 
             location: 'Oslo', 
-            eventType: 99
+            eventTypeId: 99
         }
 
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
