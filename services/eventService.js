@@ -28,8 +28,15 @@ class EventService {
         return plainEvent
     }
 
+    async getEventsForUser(userId) {
+        const events = await this.events.findAll({ where: { userId } })
+        return events.map(event => event.toJSON());
+    }
+
     async getAll() {
-        return await this.events.findAll()
+        const events = await this.events.findAll()
+        // Mistake from Day 1: In my testing, I didnt actually look at the structure, it was all sequelize models, so I am mapping to JSON here.
+        return events.map(event => event.toJSON());
     }
 
     async create(data) {

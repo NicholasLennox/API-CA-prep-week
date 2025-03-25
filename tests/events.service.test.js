@@ -17,23 +17,16 @@ const db = require('../models')
 const EventService = require('../services/eventService');
 const eventService = new EventService(db)
 
+const { initTestDb } = require('../util/testDbInit')
+
 beforeAll(async () => {
-    await db.sequelize.sync({force: true})
-    await db.EventType.bulkCreate([
-        { id: 1, name: 'Conference' },
-        { id: 2, name: 'Meetup' },
-        { id: 3, name: 'Workshop' },
-        { id: 4, name: 'Seminar' }
-    ])
-    await db.Event.bulkCreate([
-        { id: 1, title: 'Test Event 1', date: '2025-05-01', location: 'Oslo', eventTypeId: 1},
-        { id: 2, title: 'Test Event 2', date: '2025-06-10', location: 'Bergen', eventTypeId: 2}
-    ])
-});
+    await initTestDb(db)
+})
+
 
 describe('Event service GET tests', () => {
     test('EventService getAll, should return array of events', async () => {
-        const events = await eventService.getAll()
+        const events = await eventService.getAll()    
 
         expect(events).toBeInstanceOf(Array)
         expect(events.length).toEqual(2)
@@ -44,7 +37,7 @@ describe('Event service GET tests', () => {
         const event = await eventService.getById(validID)
 
         // I changed eventTypeIdId to instead show the event type as string for getById to demonstrate how to flatten returned objects
-        expect(event).toEqual({ id: 1, title: 'Test Event 1', date: '2025-05-01', location: 'Oslo', eventType: 'Conference'})
+        expect(event).toEqual({ id: 1, title: 'Test Event 1', date: '2025-05-01', location: 'Oslo', eventType: 'Conference', userId: 1 })
     })
 
     test('EventService getById with invalid ID, should return null', async () => {
@@ -52,6 +45,14 @@ describe('Event service GET tests', () => {
         const event = await eventService.getById(invalidId)
 
         expect(event).toEqual(null)
+    })
+    
+    test('EventService getEventsForUser with valid ID, should returns events', async () => {
+        const userId = 1
+        const events = await eventService.getEventsForUser(userId)
+
+        expect(events).toBeInstanceOf(Array)
+        expect(events[0]).toEqual({ id: 1, title: 'Test Event 1', date: '2025-05-01', location: 'Oslo', eventTypeId: 1, userId: 1 })
     })
 })
 
@@ -61,19 +62,21 @@ describe('Event service POST tests', () => {
             title: 'Test Event 3',
             date: '2025-06-11',
             location: 'Oslo',
-            eventTypeId: 1
+            eventTypeId: 1,
+            userId: 1
         }
 
         const newEvent = await eventService.create(validData)
 
-        expect(newEvent).toEqual({ id: 3, ...validData})
+        expect(newEvent).toEqual({ id: 3, ...validData })
     })
 
     test('EventService create with invalid data (missing title), should throw ValidationError', async () => {
         const invalidData = {
             date: '2025-06-11',
             location: 'Oslo',
-            eventTypeId: 1
+            eventTypeId: 1,
+            userId: 1
         }
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
         await expect(eventService.create(invalidData)).rejects.toThrow(ValidationError);
@@ -84,7 +87,8 @@ describe('Event service POST tests', () => {
             title: 'Test Event 3',
             date: '2024-06-11',
             location: 'Oslo',
-            eventTypeId: 1
+            eventTypeId: 1,
+            userId: 1
         }
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
         await expect(eventService.create(invalidData)).rejects.toThrow(ValidationError);
@@ -95,7 +99,8 @@ describe('Event service POST tests', () => {
             title: 't',
             date: '2025-06-11',
             location: 'Oslo',
-            eventTypeId: 1
+            eventTypeId: 1,
+            userId: 1
         }
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
         await expect(eventService.create(invalidData)).rejects.toThrow(ValidationError);
@@ -106,7 +111,8 @@ describe('Event service POST tests', () => {
             title: 'Test Event 4',
             date: '2025-06-11',
             location: 'Oslo',
-            eventTypeId: 99
+            eventTypeId: 99,
+            userId: 1
         }
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
         await expect(eventService.create(invalidData)).rejects.toThrow(ForeignKeyConstraintError);
@@ -119,9 +125,10 @@ describe('Event service PUT tests', () => {
         const validData = {
             id: 1,
             title: 'Updated Test Event 1',
-            date: '2025-05-01', 
-            location: 'Oslo', 
-            eventTypeId: 1
+            date: '2025-05-01',
+            location: 'Oslo',
+            eventTypeId: 1,
+            userId: 1
         }
         const expectedRowsAffected = 1
 
@@ -135,9 +142,10 @@ describe('Event service PUT tests', () => {
         const invalidData = {
             id: 99,
             title: 'Updated Test Event 1',
-            date: '2025-05-01', 
-            location: 'Oslo', 
-            eventTypeId: 1
+            date: '2025-05-01',
+            location: 'Oslo',
+            eventTypeId: 1,
+            userId: 1
         }
 
         const result = await eventService.update(eventId, invalidData)
@@ -150,9 +158,10 @@ describe('Event service PUT tests', () => {
         const invalidData = {
             id: 1,
             title: 'Updated Test Event 1',
-            date: '2024-05-01', 
-            location: 'Oslo', 
-            eventTypeId: 1
+            date: '2024-05-01',
+            location: 'Oslo',
+            eventTypeId: 1,
+            userId: 1
         }
 
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
@@ -164,9 +173,10 @@ describe('Event service PUT tests', () => {
         const invalidData = {
             id: 1,
             title: 'Updated Test Event 1',
-            date: '2025-05-01', 
-            location: 'Oslo', 
-            eventTypeId: 99
+            date: '2025-05-01',
+            location: 'Oslo',
+            eventTypeId: 99,
+            userId: 1
         }
 
         // Adapted from https://jestjs.io/docs/asynchronous#asyncawait
