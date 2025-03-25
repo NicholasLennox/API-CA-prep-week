@@ -10,10 +10,6 @@ Each branch represents the solution to each days activity.
 
 This readme will also update per each brach to reflect the changes.
 
-Here's your README additions cleaned up to be simpler, clearer, and less formal:
-
----
-
 ## Day 2 alterations
 
 I've cleaned up some starter files we won't need:
