@@ -24,6 +24,8 @@ function authenticateToken(req, res, next) {
                 return res.status(401).jsend.fail('Malformed token')
             }
         }
+        // Add user ID to req.user to easily see who is logged in
+        req.user = decoded.sub
         next()
     })
 }

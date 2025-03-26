@@ -44,7 +44,7 @@ class EventService {
         return newEvent ? newEvent.toJSON() : null
     }
 
-    async update(id, data) {
+    async update(id, data) {    
         const [rowsAffected] = await this.events.update({...data}, {where: {id}}) // Returns the number of rows affected as an array [1]
         // Extract just the first element out an return that, or null if no rows are affected
         return rowsAffected !== 0 ? rowsAffected : null 

@@ -1,5 +1,5 @@
 const request = require('supertest')
-const express = require('express')
+const app = require('../util/testAppSetup')
 require('dotenv').config()
 
 // Mock dbConfig
@@ -27,14 +27,6 @@ beforeAll(async () => {
 describe('Authentication integration tests', () => {
     // Dependencies needed
     const jwt = require('jsonwebtoken')
-    const authRouter = require('../routes/auth')
-    const jsend = require('jsend')
-
-    // Mock app
-    const app = express()
-    app.use(express.json())
-    app.use(jsend.middleware)
-    app.use('/auth', authRouter)
 
     // Setup variables needed
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET
@@ -198,7 +190,7 @@ describe('Authentication integration tests', () => {
                 {
                     sub: 123
                 },
-                process.env.ACCESS_TOKEN_SECRET,
+                accessTokenSecret,
                 {
                     expiresIn: '-10s'
                 }

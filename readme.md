@@ -48,6 +48,55 @@ I've updated my Jest test script to run tests sequentially (to avoid conflicts w
 }
 ```
 
+## Day 3 alterations
+
+Deleted the `views` folder as we dont need it.
+
+I moved all my `app` mocking for the tests into `util/testAppSetup` to just export an `app` that supertest can use.
+
+I removed the `app` setup from my `auth.integration.test.js` file and replced it with const `app = require('../util/testAppSetup')`.
+
+**NOTE**: We will alter `app.js` tomorrow to live test our server and make Swagger docs once it has passed all the tests using our fake app and database.
+
+Refactored auth route to use error handling middleware:
+
+```js
+// Need to include next in all routes to be able to pass errors around
+router.post('/signup', async (req, res, next) => {
+    ...
+})
+
+// Thrown errors are changed from
+if(error instanceof ValidationError) {
+    return res.status(400).jsend.fail(err.errors.map(err => err.message).join(','))
+}
+// to
+if(error instanceof ValidationError) {
+    return next(error)
+}
+
+// And http errors are changed from
+if(!email || !password) {
+    return res.status(400).jsend.fail('Both email and password are required')
+}
+// to
+if(!email || !password) {
+    return next(createError(400,'Both email and password are required'))
+}
+```
+
+Importantly, because of how Jest works, the `isHttpError` function we relied on in our error handler wont work. This has got to do with Jest creating isolated instances for each depedency (we require http-errors twice) and this causes problems with internal checkers. Somehow this affects `isHttpError`. The explanations I've seen for this aren't satisfying and I saw nothing in documentation about this. But to fix it we change the check to:
+
+```js
+if(err.status && err.expose !== undefined) {
+    return res.status(err.status).jsend.fail(err.message)
+}
+```
+
+We instead manually check if a property unique to errors created with http-errors exists (expose and status). For reference, [here](https://www.npmjs.com/package/http-errors#error-properties) is the http-error section on this.
+
+
+
 
 
 

@@ -1,3 +1,5 @@
+const { ValidationError } = require("sequelize")
+
 module.exports = (sequelize, DataTypes) => {
     const Event = sequelize.define('Event',
         {
@@ -23,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
                     isDate: true,
                     isFuture(value) {
                         if (new Date(value) <= new Date()) {
-                            throw new Error('Date must be in the future')
+                            throw new ValidationError('Date must be in the future')
                         }
                     }
                 }
