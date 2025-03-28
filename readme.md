@@ -96,6 +96,34 @@ if(err.status && err.expose !== undefined) {
 We instead manually check if a property unique to errors created with http-errors exists (expose and status). For reference, [here](https://www.npmjs.com/package/http-errors#error-properties) is the http-error section on this.
 
 
+## Day 4 alterations
+
+Removed uneeded code form `app.js`.
+
+Configured new routes with `/api/v1` prefix.
+
+Configured error handling middleware.
+
+Synced db and added event type only once.
+
+Installed `swagger-autogen` and `swagger-ui-express`.
+
+Added `swagger.js`, added a swagger run script `"swagger": "node swagger"` and added code in `swagger.js` to run the app after we run `npm swagger`:
+
+```js
+swaggerAutogen(outputFile, endpointsFiles, doc).then(() => {
+    require('./bin/www');
+});
+```
+
+Added swagger-ui config to `app.js` and made it available at `/docs`.
+
+Added [bearer authentication](https://swagger-autogen.github.io/docs/openapi-3/authentication/bearer-auth/) to our swagger config and enables it in our routes that require authentication.
+
+Added `null` check for update event (forgot to do it in day 3) and added test for it.
+
+Hid `/auth/proteced` from docs as its used for testing only.
+
 
 
 

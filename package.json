@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "swagger": "node swagger"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -17,7 +18,9 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "~1.9.1",
     "mysql2": "^3.14.0",
-    "sequelize": "^6.37.6"
+    "sequelize": "^6.37.6",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "jest": "^29.7.0",

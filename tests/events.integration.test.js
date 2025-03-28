@@ -188,6 +188,26 @@ describe('Event integration tests', () => {
         expect(response.body).toHaveProperty('status', 'fail')
         expect(response.body).toHaveProperty('data', 'You can only update your own events')       
     })
+
+    test('PUT /events/:id with non-existant event, should return 404 with message', async () => {
+        const nonexistentEvent = {
+            ...createdEvent,
+            id: 99
+        }
+        const invalidPath = 99
+        
+        const response = await request(app)
+            .put(`/events/${nonexistentEvent.id}`)
+            .set('Authorization', `Bearer ${accessToken}`)
+            .send(nonexistentEvent)
+        
+
+        // Verify status code
+        expect(response.status).toBe(404)
+        // Verifying structure of response body
+        expect(response.body).toHaveProperty('status', 'fail')
+        expect(response.body).toHaveProperty('data', 'No event with that ID exists')       
+    })
 })  
 
 afterAll(async () => {

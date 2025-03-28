@@ -1,0 +1,536 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Events API",
+    "description": "An API that allowed logged in users to create, edit, and view their events. Unauthenticated users can view all events"
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "dev",
+      "description": "This version of the document is for development purposes"
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Log in as an existing user and get an access token",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User credentials",
+            "schema": {
+              "$ref": "#/definitions/LoginSignup"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful login",
+            "schema": {
+              "$ref": "#/definitions/AccessToken"
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "401": {
+            "description": "User failed to provide valid credentials",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "404": {
+            "description": "No user with that email exists",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/signup": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "description": "Sign up as a new user, you will need to login afterwards to get a token",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "User credentials",
+            "schema": {
+              "$ref": "#/definitions/LoginSignup"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User successfully registered",
+            "schema": {
+              "$ref": "#/definitions/SignUpSuccessful"
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "401": {
+            "description": "User failed to provide valid credentials",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "404": {
+            "description": "No user with that email exists",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/events/": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get all events",
+        "responses": {
+          "200": {
+            "description": "Events for user",
+            "schema": {
+              "$ref": "#/definitions/EventArray"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Add a new event for logged in user",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "New event",
+            "schema": {
+              "$ref": "#/definitions/AddEvent"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Event created successfully",
+            "schema": {
+              "$ref": "#/definitions/AddEventSuccess"
+            }
+          },
+          "400": {
+            "description": "Invalid payload",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "401": {
+            "description": "User failed to provide valid authentication",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/mine": {
+      "get": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Get all events for logged in user",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Events for user",
+            "schema": {
+              "$ref": "#/definitions/EventArray"
+            }
+          },
+          "401": {
+            "description": "User failed to provide valid authentication",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/api/v1/events/{id}": {
+      "put": {
+        "tags": [
+          "Event"
+        ],
+        "description": "Update logged in user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "integer",
+            "description": "ID of event"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Updated event",
+            "schema": {
+              "$ref": "#/definitions/UpdateEvent"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update successful message",
+            "schema": {
+              "$ref": "#/definitions/UpdateEventSuccess"
+            }
+          },
+          "400": {
+            "description": "ID in path does not match ID in payload",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "401": {
+            "description": "User failed to provide valid authentication",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "403": {
+            "description": "User tried to update an event they did not create",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "404": {
+            "description": "No event with that ID exists",
+            "schema": {
+              "$ref": "#/definitions/FailMessage"
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "schema": {
+              "$ref": "#/definitions/ErrorMessage"
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "title": {
+          "type": "string",
+          "example": "Example event"
+        },
+        "date": {
+          "type": "string",
+          "example": "yyyy-mm-dd"
+        },
+        "location": {
+          "type": "string",
+          "example": "Example location"
+        },
+        "userId": {
+          "type": "number",
+          "example": 1
+        },
+        "eventTypeId": {
+          "type": "number",
+          "example": 1
+        }
+      }
+    },
+    "EventArray": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Event"
+          }
+        }
+      }
+    },
+    "AddEventSuccess": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "data": {
+          "$ref": "#/definitions/Event"
+        }
+      }
+    },
+    "AccessToken": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "data": {
+          "type": "string",
+          "example": "Access token"
+        }
+      }
+    },
+    "AddEvent": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "Example coffee"
+        },
+        "date": {
+          "type": "string",
+          "example": "yyyy-mm-dd"
+        },
+        "location": {
+          "type": "string",
+          "example": "Example details"
+        },
+        "eventTypeId": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "title",
+        "date",
+        "eventTypeId"
+      ]
+    },
+    "UpdateEvent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "title": {
+          "type": "string",
+          "example": "Example coffee"
+        },
+        "date": {
+          "type": "string",
+          "example": "yyyy-mm-dd"
+        },
+        "location": {
+          "type": "string",
+          "example": "Example details"
+        },
+        "eventTypeId": {
+          "type": "number",
+          "example": 1
+        },
+        "userId": {
+          "type": "number",
+          "example": 1
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "date",
+        "eventTypeId",
+        "userId"
+      ]
+    },
+    "UpdateEventSuccess": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "data": {
+          "type": "string",
+          "example": "Success message"
+        }
+      }
+    },
+    "LoginSignup": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "example": "Email in correct format"
+        },
+        "password": {
+          "type": "string",
+          "example": "Password"
+        }
+      },
+      "required": [
+        "email",
+        "password"
+      ]
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number",
+          "example": 1
+        },
+        "email": {
+          "type": "string",
+          "example": "Example email"
+        }
+      }
+    },
+    "SignUpSuccessful": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "success"
+        },
+        "data": {
+          "$ref": "#/definitions/User"
+        }
+      }
+    },
+    "FailMessage": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "fail"
+        },
+        "data": {
+          "type": "string",
+          "example": "Fail message"
+        }
+      }
+    },
+    "ErrorMessage": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "example": "error"
+        },
+        "message": {
+          "type": "string",
+          "example": "Error message"
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
